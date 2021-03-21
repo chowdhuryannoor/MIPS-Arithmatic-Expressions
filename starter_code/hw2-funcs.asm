@@ -6,14 +6,172 @@
 
 .text
 eval:
+  #saving caller $s registers on the stack
+  addi	$sp, $sp, -20			# $sp = $sp + -16 
+  sw		$s0, 16($sp)		# 
+  sw		$s1, 12($sp)		# 
+  sw		$s2, 8($sp)		# 
+  sw		$s3, 4($sp)		# 
+  sw		$s4, 0($sp)		#
+  
   #initializing the stacks
-  la		$t0, val_stack		#
-  li		$t1, -4		# $s1 = -4 
-  la		$t2, op_stack		# 
-  li		$t3, -4		# 3 = -4
+  la		$s0, val_stack		#
+  li		$s1, 0		# $t1 = 0 
+  la		$s2, op_stack		# 
+  addi	$s2, $s2, 2000			# $s2 = $ts2+ 2000
+  li		$s3, 0		# $t3 = 0
+
+  move 	$s4, $a0		# $s4 = $a0 string address
+  lb		$t0, 0($s4)	# 
+
+  #check for parens
+  li		$t2, '('		# $t3 = '('
+  li		$t3, ')'		# $t4 = ')'
+
+  j read_and_simplify
+
+read_and_simplify:
 
 
-  jr $ra
+is_num:
+  
+  #make space on the stack and save
+  move $fp, $sp
+  addi	$sp, $sp, -20			# $sp = $sp + -16
+  sw $t0, 0($sp)
+  sw $t1, 4($sp)
+  sw $t2, 8($sp)
+  sw $t3, 12($sp)
+  sw $ra, 16($sp)
+  
+  move 	$t0, $a0		# $t0 = $a0
+  jal		is_digit				# jump to is_digit and save position to $ra
+  lw $t0, 0($sp)
+  lw $t1, 4($sp)
+  lw $t2, 8($sp)
+  lw $t3, 12($sp)
+  
+
+finish_computation:
+
+
+  
+  # #if not parens then assume digit and branch
+  # j parse_string_digit
+
+# parse_string_digit:
+#   beq		$t1, $0, parse_complete	# if $t1 == $0 then parse_complete
+
+  
+#   #saving current $t registers before calling another function
+#   move 	$fp, $sp		# $fp = $sp
+#   addi	$sp, $sp, -8			# $sp = $sp + -8
+#   sw		$t0, 4($sp)		# 
+#   sw		$t1, 0($sp)		# 
+  
+#   #call the is_digit function and restore registers
+#   move 	$a0, $t1		# $a0 = $t1
+#   jal		is_digit				# jump to is_digit and save position to $ra
+#   lw		$t0, 4($sp)		#
+#   lw		$t1, 0($sp)		# 
+
+# parse_string_op:
+
+
+# parse_string_oParens:
+#   #increment paren counter by 1
+#   addi	$t1, $t1, 1			# $t2 = $t2 + 1
+
+#   #load next byte and check for null char
+#   addi	$s4, $s4, 1			# $s4 = $s4 + 1
+#   lb		$t0, 0($s4)		#
+#   beq		$t0, $0, parse_error	# if $t0 == $0 then ParseError
+  
+#   #check for another open paren 
+#   beq		$t0, $t2, parse_string_oParens	# if $t0 == $t2 then parse_string_oParens
+  
+#   #close paren immediately after open paren
+#   beq		$t0, $t3, parse_error	# if $t0 == $t3 then parse_error
+  
+#   j parse_string_digit
+  
+
+# parse_string_cParens:
+#   #decrement paren counter by 1
+#   addi	$t1, $t1, -1			# $t1 = $t1 + -1
+
+#   #check if paren counter is negative
+#   bltz  $t1, parse_error
+  
+#   #load next byte and check for null char
+#   addi	$s4, $s4, 1			# $s4 = $s4 + 1
+#   lb		$t0, 0($s4)		#
+#   beq		$t0, $0, parse_complete	# if $t0 == $0 then ParseError
+
+#   #check for another close paren
+#   beq		$t0, $t3, parse_string_cParens	# if $t0 == $t3 then parse_string_cParens
+  
+#   #open paren immediately after close paren
+#   beq		$t0, $t2, parse_error	# if $t0 == $t2 then parse_error
+
+#   j parse_string_op
+  
+
+# parse_complete:
+
+
+parse_error:
+  la		$a0, ParseError		# 
+  li		$v0, 4		# $v0 = 4
+  syscall
+  j exit
+
+invalid_char:
+  la		$a0, BadToken		# 
+  li		$v0, 4		# $v0 = 4
+  syscall
+  j exit
+
+
+# #Checks and returns a number in a string
+# is_num:
+#   add		$t0, $a0, $a1		# $t0 = $a0 + $a1
+#   li		$t1, 0		# $t1 = 0
+#   j is_num_recursion
+
+# is_num_recursion:
+#   lb		$t2, 0($t0)		#
+#   addi	$sp, $sp, -16			# $sp = $t1 + 0
+#   sw		$ra, 12($sp)		# 
+#   sw		$t0, 8($sp)		# 
+#   sw		$t1, 4($sp)		# 
+#   sw		$t2, 0($sp)		# 
+#   jal		is_digit				# jump to is_digit and save position to $ra
+#   lw		$ra, 12($sp)		# 
+#   lw		$t0, 8($sp)		# 
+#   lw		$t1, 4($sp)		# 
+#   lw		$t2, 0($sp)
+#   addi	$sp, $sp, 16			# $sp = $t1 + 0
+#   beq		$v0, $0, return_number	# if $v0 == $0 then return_number
+#   li		$t3, 10		# $t3 = 10
+#   mult	$t1, $t3			# $t1 * $t3 = Hi and Lo registers
+#   mflo	$t1					# copy Lo to $t1
+#   add		$t1, $t1, $t2		# $t1 = $t1 + $t2
+#   addi	$t0, $t0, 1			# $t0 = $t0 + 1
+#   j is_num_recursion
+
+# return_number:
+#   sub		$v0, $t0, $a0		# $v0 = $t0 - $a0
+#   beq		$v0, $a0, not_a_num	# if $v0 == $a0 then not_a_num
+#   move 	$v1, $t1		# $v1 = $t1
+#   jr		$ra					# jump to $ra
+  
+
+# not_a_num:
+#   li		$v1, -1		# $v0 = -1
+#   jr $ra
+
+  
 
 #check if an input is a valid digit
 is_digit:
