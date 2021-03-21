@@ -17,7 +17,7 @@ main:
   # add code to call and test stack_pop function
     # add code to call and test stack_push function
   li		$a0, 3		# $a0 = 3
-  li		$a1, -4		# $a1 = -4
+  li		$a1, 0		# $a1 = 0
   la		$s0, val_stack		# 
   move 	$a2, $s0		# $a2 = $s0
   jal		stack_push				# jump to stack_push and save position to $ra
@@ -30,23 +30,22 @@ main:
   move 	$a2, $s0		# $a2 = $s0
   jal		stack_push				# jump to stack_push and save position to $ra
   
-  
-  move 	$a0, $v0		# $s1 = $v0
+  addi	$t0, $v0, -4			# $t0 = $v0 + -4
+  move 	$a0, $t0		# $s1 = $t0
   move 	$a1, $s0		# $a1 = $s0
   jal		stack_pop				# jump to stack_pop and save position to $ra
-  move 	$a0, $v0		# $s1 = $v0
+  addi	$t0, $v0, -4			# $t0 = $v0 + -4
+  move 	$a0, $t0		# $s1 = $t0
   move 	$a1, $s0		# $a1 = $s0
   jal		stack_pop				# jump to stack_pop and save position to $ra
-  move 	$a0, $v0		# $s1 = $v0
+  addi	$t0, $v0, -4			# $t0 = $v0 + -4
+  move 	$a0, $t0		# $s1 = $t0
   move 	$a1, $s0		# $a1 = $s0
   jal		stack_pop				# jump to stack_pop and save position to $ra
   move 	$a0, $v0		# $a0 = $v0
   li		$v0, 1		# $v0 = 1
   syscall
   move 	$a0, $v1		# $a0 = $v1
-  syscall
-  la		$a0, Newline		# 
-  li		$v0, 4		# $v0 = 1
   syscall
   j		end				# jump to end
 

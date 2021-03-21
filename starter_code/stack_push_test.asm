@@ -14,7 +14,7 @@ main:
 
   # add code to call and test stack_push function
   li		$a0, 3		# $a0 = 3
-  li		$a1, -4		# $a1 = -4
+  li		$a1, 0		# $a1 = 0
   la		$s0, val_stack		# 
   move 	$a2, $s0		# $a2 = $s0
   jal		stack_push				# jump to stack_push and save position to $ra
