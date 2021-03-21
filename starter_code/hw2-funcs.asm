@@ -6,6 +6,13 @@
 
 .text
 eval:
+  #initializing the stacks
+  la		$t0, val_stack		#
+  li		$t1, -4		# $s1 = -4 
+  la		$t2, op_stack		# 
+  li		$t3, -4		# 3 = -4
+
+
   jr $ra
 
 #check if an input is a valid digit
