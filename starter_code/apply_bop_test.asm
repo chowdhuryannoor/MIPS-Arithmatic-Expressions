@@ -13,9 +13,9 @@ op_stack : .word 0
 main:
 
   # add code to test call and test apply_bop function
-  li		$a0, 100		# $a0 = 1
-  li		$a1, '/'		# $a1 = '+'
-  li		$a2, 2		# $a2 = 2
+  li		$a0, 2		# $a0 = 1
+  li		$a1, '-'		# $a1 = '+'
+  li		$a2, 3		# $a2 = 2
   jal		apply_bop				# jump to apply_bop and save position to $ra
   move 	$a0, $v0		# $a0 = $v0
   li		$v0, 1		# $v0 = 1
